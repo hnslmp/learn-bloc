@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learn_bloc/bloc/counter.dart';
@@ -16,17 +18,24 @@ class HomePage extends StatelessWidget {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          BlocBuilder(
+          BlocListener(
             bloc: myCounter,
-            buildWhen: (previous, current) {
+            listener: (context, state) {
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text("Dijalankan")));
+            },
+            listenWhen: (previous, current) {
               return true;
             },
-            builder: (context, state) {
-              return Text(
-                "$state",
-                style: TextStyle(fontSize: 50),
-              );
-            },
+            child: BlocBuilder(
+              bloc: myCounter,
+              builder: (context, state) {
+                return Text(
+                  "$state",
+                  style: TextStyle(fontSize: 50),
+                );
+              },
+            ),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
