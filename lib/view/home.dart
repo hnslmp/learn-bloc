@@ -1,15 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learn_bloc/bloc/counter.dart';
-import 'package:learn_bloc/data_widget.dart';
+import 'package:learn_bloc/view/data_widget.dart';
+import 'package:learn_bloc/view/other.dart';
 
 class HomePage extends StatelessWidget {
   HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    Counter blocCounter = context.read<Counter>();
+
     return Scaffold(
       appBar: AppBar(title: const Text("Bloc Provider")),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => BlocProvider.value(
+                value: blocCounter,
+                child: OtherPage(),
+              ),
+            ),
+          );
+        },
+        child: Icon(Icons.arrow_forward),
+      ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
