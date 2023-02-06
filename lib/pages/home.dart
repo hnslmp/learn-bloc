@@ -1,116 +1,77 @@
 import 'package:flutter/material.dart';
+import 'package:learn_bloc/bloc/user_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:learn_bloc/bloc/counter.dart';
-import 'package:learn_bloc/bloc/theme.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    CounterBloc blocCounter = context.read<CounterBloc>();
-    ThemeBloc blocTheme = context.read<ThemeBloc>();
+    UserBloc blocUser = context.read<UserBloc>();
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Home"),
+        title: Text("Home"),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          blocTheme.changeTheme();
-        },
-      ),
-      body: Center(
-          child: Column(
-        mainAxisSize: MainAxisSize.min,
+      body: ListView(
+        padding: const EdgeInsets.all(20),
         children: [
-          MultiBlocListener(
-            listeners: [
-              BlocListener<ThemeBloc, bool>(
-                listener: (context, state) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text("TEMA GELAP AKTIF"),
-                    duration: Duration(milliseconds: 200),
-                  ));
-                },
-                listenWhen: (previous, current) {
-                  return !current;
-                },
-              ),
-              BlocListener<CounterBloc, int>(
-                listener: (context, state) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text("Diatas 10 yaitu $state"),
-                    duration: Duration(milliseconds: 200),
-                  ));
-                },
-                listenWhen: (previous, current) {
-                  return current > 10;
-                },
-              ),
-            ],
-            child: BlocBuilder<CounterBloc, int>(
-              bloc: blocCounter,
-              builder: (context, state) {
-                return Text(
-                  "$state",
-                  style: TextStyle(fontSize: 50),
-                );
-              },
+          BlocSelector<UserBloc, Map<String, dynamic>, String>(
+            selector: (state) => state['name'],
+            builder: (context, state) {
+              return Text("NAMA : $state");
+            },
+          ),
+          BlocSelector<UserBloc, Map<String, dynamic>, int>(
+            selector: (state) => state['age'],
+            builder: (context, state) {
+              return Text("NAMA : $state");
+            },
+          ),
+          // Code tanpa bloc selector, pakai bloc selector biar ga semuanya ke build
+          // BlocBuilder<UserBloc, Map<String, dynamic>>(
+          //   bloc: blocUser,
+          //   builder: (context, state) {
+          //     return Text("NAMA : ${state['name']}");
+          //   },
+          // ),
+          // BlocBuilder<UserBloc, Map<String, dynamic>>(
+          //   bloc: blocUser,
+          //   builder: (context, state) {
+          //     return Text("NAMA : ${state['age']}");
+          //   },
+          // ),
+
+          SizedBox(
+            height: 20,
+          ),
+          TextField(
+            onChanged: (value) => blocUser.changeName(value),
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
             ),
           ),
-
-          // Without MultiBloc Listener code
-          // BlocListener<ThemeBloc, bool>(
-          //   listener: (context, state) {
-          //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          //       content: Text("TEMA GELAP AKTIF"),
-          //       duration: Duration(milliseconds: 200),
-          //     ));
-          //   },
-          //   listenWhen: (previous, current) {
-          //     return !current;
-          //   },
-          //   child: BlocListener<CounterBloc, int>(
-          //     listener: (context, state) {
-          //       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          //         content: Text("Diatas 10 yaitu $state"),
-          //         duration: Duration(milliseconds: 200),
-          //       ));
-          //     },
-          //     listenWhen: (previous, current) {
-          //       return current > 10;
-          //     },
-          //     child: BlocBuilder<CounterBloc, int>(
-          //       bloc: blocCounter,
-          //       builder: (context, state) {
-          //         return Text(
-          //           "$state",
-          //           style: TextStyle(fontSize: 50),
-          //         );
-          //       },
-          //     ),
-          //   ),
-          // ),
+          SizedBox(
+            height: 20,
+          ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               IconButton(
                 onPressed: () {
-                  blocCounter.remove();
+                  blocUser.changeAge(blocUser.state["age"] - 1);
                 },
                 icon: Icon(Icons.remove),
               ),
               IconButton(
                 onPressed: () {
-                  blocCounter.add();
+                  blocUser.changeAge(blocUser.state["age"] + 1);
                 },
                 icon: Icon(Icons.add),
               )
             ],
           )
         ],
-      )),
+      ),
     );
   }
 }
